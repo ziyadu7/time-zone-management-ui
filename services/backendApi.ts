@@ -2,14 +2,13 @@ import { Timezone, Timeslot } from "@/types";
 import axios from "axios";
 
 let api = axios.create({
-    baseURL: process.env.API_BASE,
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
 })
 export const fetchTimezones = async (): Promise<Timezone[]> => {
   try {
-    const response = await api.get<Timezone[]>("/api/timezones");
+    const response = await api.get<Timezone[]>("/timezones");
     return response.data;
   } catch (error) {
-    // Check if it's a known Axios error to get better error messages
     if (axios.isAxiosError(error)) {
       throw new Error(error.response?.data?.message || "Could not load timezones.");
     }
@@ -19,7 +18,7 @@ export const fetchTimezones = async (): Promise<Timezone[]> => {
 
 export const fetchTimeslots = async (): Promise<Timeslot[]> => {
   try {
-    const response = await api.get<Timeslot[]>("/api/timeslots");
+    const response = await api.get<Timeslot[]>("/timeslots");
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

@@ -6,18 +6,26 @@ import { fetchTimezones, fetchTimeslots } from "@/services/backendApi";
 import TimezoneDropdown from "@/components/timeZoneDropdown";
 import TimeslotDropdown from "@/components/timeslotList";
 import TimeslotDetails from "@/components/timeslotDetails";
+import PageLoading from "@/components/pageLoading";
 
 export default function Home() {
   const [timezones, setTimezones] = useState<Timezone[]>([]);
   const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedTimezone, setSelectedTimezone] = useState<Timezone | null>(null);
   const [selectedTimeslot, setSelectedTimeslot] = useState<string | null>(null);
-  const [showTimeSloteDetails, setshowTimeSloteDetails] = useState<boolean | null>(false);
+  const [showTimeSloteDetails, setshowTimeSloteDetails] = useState(false);
 
   useEffect(() => {
-    console.log("Fetching timezones and timeslots");
-    fetchTimezones().then(setTimezones);
-    fetchTimeslots().then(setTimeslots);
+    const fetchData = async () => {
+      console.log("Fetching timezones and timeslots");
+      let fetchedTimezones = await fetchTimezones()
+      let fetchedTimeslots = await fetchTimeslots()
+      setTimezones(fetchedTimezones);
+      setTimeslots(fetchedTimeslots);
+      setLoading(false);
+    };
+    fetchData();
   }, []);
 
   return (
@@ -27,14 +35,16 @@ export default function Home() {
           Timezone & Timeslot Management
         </h1>
 
-        <TimezoneDropdown
-          timezones={timezones}
-          selected={selectedTimezone}
-          onChange={(tz) => {
-            setSelectedTimezone(tz);
-            setSelectedTimeslot(null);
-          }}
-        />
+        {loading ?
+          <PageLoading /> : <TimezoneDropdown
+            timezones={timezones}
+            selected={selectedTimezone}
+            onChange={(tz) => {
+              setSelectedTimezone(tz);
+              setSelectedTimeslot(null);
+            }}
+          />
+        }
 
         <TimeslotDropdown
           timeslots={timeslots}
